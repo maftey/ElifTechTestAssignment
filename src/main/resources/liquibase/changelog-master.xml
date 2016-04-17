@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog 
+	xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
+						http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd 
+						http://www.liquibase.org/xml/ns/dbchangelog 
+						http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd"
+>
+	<changeSet author="maftey" id="1">
+		<createSequence sequenceName="company_id_seq"/>
+	</changeSet>
+	
+	<changeSet author="maftey" id="2">
+		<createTable tableName="company">
+			<column name="id" type="BIGINT" defaultValueSequenceNext="company_id_seq">
+				<constraints nullable="false" primaryKey="true" primaryKeyName="pk_company" />
+			</column>
+			<column name="name" type="VARCHAR(255)">
+				<constraints nullable="false" unique="true"/>
+			</column>
+			<column name="estimated_earnings" type="BIGINT">
+				<constraints nullable="false"/>
+			</column>
+			<column name="parent_id" type="BIGINT">
+			</column>
+		</createTable>
+	</changeSet>
+	<changeSet author="maftey" id="3">
+		<sql>
+			DELETE FROM company;
+			
+			INSERT INTO company (id, name, estimated_earnings, parent_id) VALUES (1, 'big company', 10000, null);
+			INSERT INTO company (id, name, estimated_earnings, parent_id) VALUES (2, 'sub company A', 5000, 1);
+			INSERT INTO company (id, name, estimated_earnings, parent_id) VALUES (3, 'sub company B', 4000, 1);
+			INSERT INTO company (id, name, estimated_earnings, parent_id) VALUES (4, 'sub sub company AA', 3000, 2);
+			INSERT INTO company (id, name, estimated_earnings, parent_id) VALUES (5, 'big company 2', 15000, null);
+			INSERT INTO company (id, name, estimated_earnings, parent_id) VALUES (6, 'sub company 2 A', 1000, 5);
+			
+			SELECT setval('company_id_seq', (SELECT MAX(id) FROM company));
+		</sql>
+	</changeSet>
+</databaseChangeLog>
